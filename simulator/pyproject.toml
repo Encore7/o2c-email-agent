@@ -1,0 +1,20 @@
+[project]
+name = "o2c-email-simulator"
+version = "0.1.0"
+description = "Email stream simulator for O2C backend demos."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "httpx>=0.28.0",
+  "psycopg[binary]>=3.2.0",
+]
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

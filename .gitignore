@@ -1,0 +1,13 @@
+/.venv/
+backend/.venv/
+simulator/.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+dist/
+build/
+.env
+backend/.env
+simulator/runtime/
+.DS_Store

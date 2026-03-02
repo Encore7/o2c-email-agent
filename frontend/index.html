@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>O2C Email Dashboard</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="header-bar">
+        <div></div>
+        <h1 class="tenant-title">ABC Product</h1>
+        <div class="health-block" title="Backend health">
+          <span id="health-indicator" class="health-dot health-down"></span>
+        </div>
+      </section>
+
+      <section class="controls">
+        <button id="refresh-btn" type="button">Refresh</button>
+      </section>
+
+      <section>
+        <h2>Email Classification</h2>
+        <div id="cards" class="cards"></div>
+      </section>
+
+      <section class="table-section">
+        <div class="table-header">
+          <h2 id="table-title">All Emails</h2>
+          <button id="clear-filter-btn" type="button">Clear Filter</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Received At</th>
+              <th>Subject</th>
+              <th>Category</th>
+              <th>Confidence</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="emails-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <div id="email-modal" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-subject">Email Detail</h3>
+          <button id="modal-close-btn" type="button">Close</button>
+        </div>
+        <div id="modal-summary" class="summary-strip"></div>
+
+        <div class="tab-bar">
+          <button id="tab-overview" class="tab-btn active" type="button">Overview</button>
+          <button id="tab-evidence" class="tab-btn" type="button">Evidence</button>
+          <button id="tab-reply" class="tab-btn" type="button">Reply</button>
+        </div>
+
+        <section id="panel-overview" class="tab-panel">
+          <div id="modal-overview"></div>
+        </section>
+
+        <section id="panel-evidence" class="tab-panel hidden">
+          <details class="detail-box">
+            <summary>Classification Evidence</summary>
+            <div id="modal-classification"></div>
+          </details>
+          <details class="detail-box">
+            <summary>Extraction Evidence</summary>
+            <div id="modal-extraction"></div>
+          </details>
+          <details class="detail-box">
+            <summary>Invoice Match Evidence</summary>
+            <div id="modal-invoice"></div>
+          </details>
+          <details class="detail-box">
+            <summary>Original Email Body</summary>
+            <pre id="modal-body" class="body-pre"></pre>
+          </details>
+        </section>
+
+        <section id="panel-reply" class="tab-panel hidden">
+          <div class="controls">
+            <button id="send-reply-btn" type="button">Send</button>
+          </div>
+          <div id="modal-reply"></div>
+        </section>
+      </div>
+    </div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
