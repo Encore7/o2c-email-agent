@@ -42,8 +42,27 @@ body {
 
 .controls {
   display: flex;
+  gap: 10px;
   justify-content: flex-end;
+  align-items: center;
   margin-bottom: 16px;
+}
+
+.date-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.date-filter input[type="date"] {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--panel);
 }
 
 .health-block {
@@ -74,11 +93,33 @@ button {
   border-radius: 8px;
   padding: 8px 10px;
   font-size: 14px;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.12s ease,
+    background-color 0.12s ease,
+    border-color 0.12s ease;
 }
 
 button {
   cursor: pointer;
   background: var(--panel);
+  box-shadow: 0 1px 0 rgba(16, 34, 58, 0.06);
+}
+
+button:hover {
+  background: #f8fbff;
+  border-color: #b9cce3;
+}
+
+button:active {
+  transform: translateY(1px);
+  background: #edf3fb;
+  box-shadow: inset 0 1px 2px rgba(16, 34, 58, 0.12);
+}
+
+button:focus-visible {
+  outline: 2px solid #87b8e8;
+  outline-offset: 1px;
 }
 
 .cards {
@@ -157,12 +198,67 @@ tbody tr:hover {
   background: #f8fbff;
 }
 
+.selected-row {
+  background: #eaf3ff;
+  outline: 1px solid #9ec5f1;
+}
+
 .pill {
   display: inline-block;
   border-radius: 999px;
   border: 1px solid var(--border);
   padding: 2px 8px;
   font-size: 12px;
+}
+
+.priority-pill {
+  text-transform: capitalize;
+}
+
+.priority-high {
+  background: #fdecec;
+  border-color: #efb3b3;
+  color: #8a1f1f;
+}
+
+.priority-medium {
+  background: #fff7e7;
+  border-color: #f1d59b;
+  color: #7d4a03;
+}
+
+.priority-low {
+  background: #edf8ef;
+  border-color: #b9e0c0;
+  color: #1d6a2f;
+}
+
+.status-pill {
+  text-transform: capitalize;
+}
+
+.status-new {
+  background: #edf3ff;
+  border-color: #b8c9f0;
+  color: #294a88;
+}
+
+.status-under_review {
+  background: #fff7e7;
+  border-color: #f1d59b;
+  color: #7d4a03;
+}
+
+.status-reviewed {
+  background: #edf8ef;
+  border-color: #b9e0c0;
+  color: #1d6a2f;
+}
+
+.status-needs_further_review {
+  background: #fdecec;
+  border-color: #efb3b3;
+  color: #8a1f1f;
 }
 
 .modal {
@@ -199,6 +295,25 @@ tbody tr:hover {
 
 .modal-header h3 {
   margin: 0;
+}
+
+.modal-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.status-select {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  background: #fff;
 }
 
 .body-pre {
