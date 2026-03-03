@@ -5,7 +5,7 @@
 - `backend/`: FastAPI backend (LangChain + LangGraph workflow, Postgres persistence)
 - `frontend/`: Static dashboard (HTML/CSS/JS modules)
 - `simulator/`: Source-system simulator (writes source emails, calls backend endpoint)
-- `infra/postgres/`: Postgres schema + seed initialization (invoices, tables)
+- `database/`: Postgres schema + seed initialization (invoices, tables)
 
 ## Run With Docker
 
@@ -23,10 +23,20 @@ Run simulator:
 docker compose run --rm simulator
 ```
 
-Slow mode example:
+Ordered mode (stable demo):
 
 ```bash
-docker compose run --rm simulator python -m app.main --mode slow \
+docker compose run --rm simulator python -m app.main --mode ordered \
+  --tenant-id tenant_id \
+  --date 2026-01-20 \
+  --backend-url http://backend:8000 \
+  --postgres-dsn postgresql://o2c:o2c@postgres:5432/o2c
+```
+
+Fast crash mode (load/failure demo):
+
+```bash
+docker compose run --rm simulator python -m app.main --mode fast_crash \
   --tenant-id tenant_id \
   --date 2026-01-20 \
   --backend-url http://backend:8000 \
@@ -55,11 +65,24 @@ Backend URL:
 
 ## LLM Provider
 
-LLM provider is selected by environment:
+Primary LLM is selected by environment and can be swapped:
 - `LLM_PROVIDER=ollama|groq|openai|anthropic|google`
 - `LLM_MODEL=...`
-- for Ollama in Docker: `OLLAMA_BASE_URL=http://host.docker.internal:11434`
-- for cloud providers: matching API key in `backend/.env`
+- fallback stays Ollama with:
+  - `LLM_FALLBACK_PROVIDER=ollama`
+  - `LLM_FALLBACK_MODEL=...`
+
+Example (`backend/.env`) for Groq primary + Ollama fallback:
+
+```env
+LLM_PROVIDER=groq
+LLM_MODEL=llama-3.3-70b-versatile
+GROQ_API_KEY=your_key
+
+LLM_FALLBACK_PROVIDER=ollama
+LLM_FALLBACK_MODEL=llama3.1:latest
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+```
 
 ## Tests
 

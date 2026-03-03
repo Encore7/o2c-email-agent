@@ -15,22 +15,23 @@ uv sync
 
 ```bash
 cd simulator
-uv run python -m app.main --mode fast
+uv run python -m app.main --mode ordered
 ```
 
+Modes:
+- `--mode ordered`: sends one email at a time in `receivedAt` order.
+- `--mode fast_crash`: sends aggressively to show overload/failure behavior.
+
 Options:
-- `--mode fast|slow`
-- `--interval-seconds 0.2`
-- `--limit 20`
+- `--mode ordered|fast_crash`
+- `--limit 100`
 - `--backend-url http://127.0.0.1:8000`
 - `--tenant-id tenant_id`
 - `--date 2026-01-20`
-- `--request-timeout-seconds 0` (0 means no timeout)
-- `--source /absolute/or/relative/path.json` (optional override)
-
+- `--source /absolute/or/relative/path.json`
 Source data file:
 - `data/emails/tenants/<tenant_id>/<date>.json`
-- `data/emails/raw/Sample Emails.json` (raw copy kept in repo)
+- `data/emails/raw/Sample Emails.json`
 
 Target source DB table:
 - `source_emails` in Postgres

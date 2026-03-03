@@ -17,6 +17,10 @@
       </section>
 
       <section class="controls">
+        <label class="date-filter">
+          <span>Date</span>
+          <input id="date-filter-input" type="date" value="2026-01-20" />
+        </label>
         <button id="refresh-btn" type="button">Refresh</button>
       </section>
 
@@ -37,6 +41,7 @@
               <th>Subject</th>
               <th>Category</th>
               <th>Confidence</th>
+              <th>Priority</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -49,7 +54,17 @@
       <div class="modal-card">
         <div class="modal-header">
           <h3 id="modal-subject">Email Detail</h3>
-          <button id="modal-close-btn" type="button">Close</button>
+          <div class="modal-header-actions">
+            <label class="status-label" for="modal-status-select">Status</label>
+            <select id="modal-status-select" class="status-select">
+              <option value="new">New</option>
+              <option value="under_review">Under Review</option>
+              <option value="reviewed">Reviewed</option>
+              <option value="needs_further_review">Needs Further Review</option>
+            </select>
+            <button id="save-status-btn" type="button">Save Status</button>
+            <button id="modal-close-btn" type="button">Close</button>
+          </div>
         </div>
         <div id="modal-summary" class="summary-strip"></div>
 
@@ -84,7 +99,7 @@
 
         <section id="panel-reply" class="tab-panel hidden">
           <div class="controls">
-            <button id="send-reply-btn" type="button">Send</button>
+            <button id="send-reply-btn" type="button">Create Gmail Draft</button>
           </div>
           <div id="modal-reply"></div>
         </section>

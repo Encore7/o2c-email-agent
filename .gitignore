@@ -11,3 +11,4 @@ build/
 backend/.env
 simulator/runtime/
 .DS_Store
+gmail.text

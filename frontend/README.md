@@ -1,10 +1,10 @@
 # O2C Email Agent Frontend
 
-Static dashboard (plain HTML/CSS/JS modules) for:
+Static dashboard (HTML/CSS/JS modules) for:
 - 3 classification cards
 - all emails table
 - modal with Overview / Evidence / Reply tabs
-- editable recommended reply + Send action
+- editable recommended reply + Gmail draft action
 
 ## Run
 
