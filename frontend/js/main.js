@@ -1,86 +1,59 @@
-import { CATEGORY_LABELS, getBaseApi } from "./config.js";
-import { fetchJson, updateHealth } from "./api.js";
 import { getDomElements } from "./dom.js";
-import { clearEmailRows, renderCards, upsertEmailRows } from "./dashboard.js";
-import { createModalController } from "./modal.js";
+import { createModalController } from "./modal/controller.js";
+import { loadDashboardData } from "./app/data_loader.js";
+import { bindDashboardEvents } from "./app/events.js";
+import { createDashboardState, updateEmailInState } from "./app/state.js";
 
 export function bootstrapApp() {
   const dom = getDomElements();
-  let selectedCategory = null;
-  let currentEmails = [];
-  let selectedDate = dom.dateFilterInputEl?.value || "2026-01-20";
-  let activeSourceEmailId = null;
-  let activeFilterKey = "";
-  const rowsBySourceEmailId = new Map();
+  const state = createDashboardState(dom.dateFilterInputEl?.value || "2026-01-20");
 
   const modal = createModalController(
     dom,
-    () => currentEmails,
-    (updatedEmail) => {
-      const idx = currentEmails.findIndex((e) => e.source_email_id === updatedEmail.source_email_id);
-      if (idx >= 0) currentEmails[idx] = updatedEmail;
-    }
+    () => state.currentEmails,
+    (updatedEmail) => updateEmailInState(state, updatedEmail)
   );
 
   function onCategoryToggle(category) {
-    selectedCategory = selectedCategory === category ? null : category;
-    loadData();
+    state.selectedCategory = state.selectedCategory === category ? null : category;
+    void refresh();
   }
 
-  function openEmail(email) {
-    activeSourceEmailId = email.source_email_id;
-    modal.open(email.id);
-  }
-
-  async function loadData() {
-    await updateHealth(dom.healthIndicatorEl);
-    dom.tableTitleEl.textContent = selectedCategory
-      ? `${CATEGORY_LABELS[selectedCategory]} Emails`
-      : "All Emails";
-    try {
-      const dashboardParams = new URLSearchParams();
-      if (selectedDate) dashboardParams.set("date", selectedDate);
-      const dashboard = await fetchJson(`${getBaseApi()}/dashboard?${dashboardParams.toString()}`);
-
-      const emailParams = new URLSearchParams();
-      if (selectedCategory) emailParams.set("category", selectedCategory);
-      if (selectedDate) emailParams.set("date", selectedDate);
-      emailParams.set("order", "asc");
-      const emailList = await fetchJson(`${getBaseApi()}/emails?${emailParams.toString()}`);
-      currentEmails = emailList.emails;
-
-      const currentFilterKey = `${selectedCategory || "all"}|${selectedDate || "all"}`;
-      if (currentFilterKey !== activeFilterKey) {
-        clearEmailRows(dom.emailsBodyEl, rowsBySourceEmailId);
-        activeFilterKey = currentFilterKey;
-      }
-
-      renderCards(dom.cardsEl, dashboard.cards, selectedCategory, onCategoryToggle);
-      upsertEmailRows(
-        dom.emailsBodyEl,
-        currentEmails,
-        openEmail,
-        rowsBySourceEmailId,
-        activeSourceEmailId
-      );
-    } catch (err) {
-      dom.cardsEl.innerHTML = "";
-      dom.emailsBodyEl.innerHTML = `<tr><td colspan="5">Failed to load data: ${err.message}</td></tr>`;
-      rowsBySourceEmailId.clear();
+  function highlightBySourceEmailId(previousSourceEmailId, nextSourceEmailId) {
+    if (previousSourceEmailId) {
+      const previousRow = state.rowsBySourceEmailId.get(previousSourceEmailId);
+      previousRow?.classList.remove("selected-row");
+    }
+    if (nextSourceEmailId) {
+      const nextRow = state.rowsBySourceEmailId.get(nextSourceEmailId);
+      nextRow?.classList.add("selected-row");
     }
   }
 
-  dom.refreshBtnEl.addEventListener("click", loadData);
-  dom.dateFilterInputEl?.addEventListener("change", () => {
-    selectedDate = dom.dateFilterInputEl.value;
-    loadData();
+  function onEmailClick(email) {
+    const previousSourceEmailId = state.activeSourceEmailId;
+    state.activeSourceEmailId = email.source_email_id;
+    highlightBySourceEmailId(previousSourceEmailId, state.activeSourceEmailId);
+    modal.open(email.id);
+  }
+
+  async function refresh() {
+    await loadDashboardData({
+      dom,
+      state,
+      onCategoryToggle,
+      onEmailClick,
+    });
+  }
+
+  bindDashboardEvents(dom, state, {
+    refresh: () => void refresh(),
+    clearFilter: () => void refresh(),
+    onDateChange: () => void refresh(),
   });
-  dom.clearFilterBtnEl.addEventListener("click", () => {
-    selectedCategory = null;
-    loadData();
-  });
+
   modal.bindEvents();
 
-  loadData();
-  setInterval(loadData, 4000);
+  void refresh();
+  setInterval(() => void refresh(), 4000);
 }

@@ -1,5 +1,6 @@
 import { CATEGORY_LABELS } from "./config.js";
 import { formatDateTime } from "./utils.js";
+import { normalizeCaseStatus } from "./case_status.js";
 
 export function renderCards(cardsEl, cards, selectedCategory, onCategoryToggle) {
   cardsEl.innerHTML = "";
@@ -71,13 +72,4 @@ function updateEmailRow(tr, email, activeSourceEmailId) {
     <td><span class="pill priority-pill priority-${priority}">${priority}</span></td>
     <td><span class="pill status-pill status-${status}">${status.replaceAll("_", " ")}</span></td>
   `;
-}
-
-function normalizeCaseStatus(value) {
-  const lowered = (value || "").toLowerCase();
-  if (lowered === "open") return "under_review";
-  if (lowered === "waiting_customer") return "needs_further_review";
-  if (lowered === "resolved") return "reviewed";
-  if (["new", "under_review", "reviewed", "needs_further_review"].includes(lowered)) return lowered;
-  return "under_review";
 }
