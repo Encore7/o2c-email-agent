@@ -1,6 +1,7 @@
 from app.services.llm.workflow_nodes import (
     case_create_node,
-    classify_extract_node,
+    classify_node,
+    extract_node,
     invoice_match_node,
     next_step_node,
     reply_draft_node,
@@ -9,11 +10,12 @@ from app.services.llm.workflow_nodes import (
 from tests.mocks.mock_llm import MockLLM
 
 
-def test_classify_extract_node():
+def test_classify_and_extract_nodes():
     state = {"subject": "Payment sent INV-10000", "body": "Regards,\nFreshMart Retail Finance Team"}
-    out = classify_extract_node(MockLLM(), state)
-    assert out["classification"].category == "payment_claim"
-    assert out["extraction"].customer_name is not None
+    classification_out = classify_node(MockLLM(), state)
+    extraction_out = extract_node(MockLLM(), state)
+    assert classification_out["classification"].category == "payment_claim"
+    assert extraction_out["extraction"].customer_name is not None
 
 
 def test_invoice_match_node():

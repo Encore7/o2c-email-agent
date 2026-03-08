@@ -13,13 +13,20 @@ from app.services.tools import (
 tracer = trace.get_tracer(__name__)
 
 
-def classify_extract_node(service: LangChainLLMService, state: EmailWorkflowState) -> EmailWorkflowState:
-    with tracer.start_as_current_span("workflow.classify_extract"):
+def classify_node(service: LangChainLLMService, state: EmailWorkflowState) -> EmailWorkflowState:
+    with tracer.start_as_current_span("workflow.classify"):
         subject = state["subject"]
         body = state["body"]
         classification = service.classify(subject=subject, body=body)
+        return {"classification": classification}
+
+
+def extract_node(service: LangChainLLMService, state: EmailWorkflowState) -> EmailWorkflowState:
+    with tracer.start_as_current_span("workflow.extract"):
+        subject = state["subject"]
+        body = state["body"]
         extraction = service.extract(subject=subject, body=body)
-        return {"classification": classification, "extraction": extraction}
+        return {"extraction": extraction}
 
 
 def invoice_match_node(state: EmailWorkflowState) -> EmailWorkflowState:
