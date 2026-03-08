@@ -1,5 +1,17 @@
 # O2C Email Agent Monorepo
 
+This project is an end-to-end O2C (Order-to-Cash) email operations system for Accounts Receivable teams.  
+It ingests inbound customer AR emails, classifies them, extracts key financial context, creates structured finance cases, and recommends the next best action.  
+The solution includes a FastAPI backend with LangChain/LangGraph workflow orchestration, a lightweight frontend dashboard, a simulator for source-system email events, and an observability stack (Prometheus, Loki, Tempo, Grafana).
+
+## System Design
+
+![O2C Email Agent System Design](./design.png)
+
+Notes:
+- Gmail integration is draft-only (`/emails/{source_email_id}/gmail-draft`) with human review before send.
+- LangGraph workflow includes parallel `classify` and `extract` branches before case creation.
+
 ## Structure
 
 - `backend/`: FastAPI backend (LangChain + LangGraph workflow, Postgres persistence)
