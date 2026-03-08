@@ -17,13 +17,42 @@ docker compose down -v --remove-orphans
 docker compose up --build -d
 ```
 
+Start with observability stack (Grafana + Prometheus + Tempo + Alloy + Postgres exporter):
+
+```bash
+docker compose --profile observability up --build -d
+```
+
+Enable backend tracing export in `backend/.env`:
+
+```env
+METRICS_ENABLED=true
+OTEL_ENABLED=true
+OTEL_EXPORTER_OTLP_ENDPOINT=alloy:4317
+OTEL_EXPORTER_INSECURE=true
+```
+
+View observability:
+
+```bash
+docker compose --profile observability down -v --remove-orphans
+docker compose --profile observability up --build -d
+curl -s http://localhost:8000/metrics | head
+docker compose run --rm simulator
+```
+
+Then open Grafana `http://localhost:3000` (`admin/admin`):
+- Dashboard: `O2C API & DB Observability` for throughput, API E2E latency (avg/p95/p99), error rate, and DB transactions.
+- Explore -> Tempo datasource for traces (service `o2c-backend`).
+- Explore -> Loki datasource with query `{container="o2c-backend"}` for backend logs.
+
 Run simulator:
 
 ```bash
 docker compose run --rm simulator
 ```
 
-Ordered mode (stable demo):
+Ordered mode:
 
 ```bash
 docker compose run --rm simulator python -m app.main --mode ordered \
@@ -62,6 +91,13 @@ Frontend URL:
 
 Backend URL:
 - `http://localhost:8000/docs`
+
+Observability URLs:
+- Grafana: `http://localhost:3000` (admin/admin)
+- Prometheus: `http://localhost:9090`
+- Tempo API: `http://localhost:3200`
+- Loki API: `http://localhost:3100`
+- Backend metrics: `http://localhost:8000/metrics`
 
 ## LLM Provider
 

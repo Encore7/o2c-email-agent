@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: o2c-observability
+    orgId: 1
+    folder: O2C
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

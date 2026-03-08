@@ -20,6 +20,9 @@ cd backend
 uv run uvicorn app.main:app --reload
 ```
 
+Metrics endpoint:
+- `GET /metrics` (Prometheus format)
+
 ## Process Endpoint
 
 `POST /api/v1/tenants/{tenant_id}/process-source-email`
@@ -113,3 +116,19 @@ Per inbound email, backend executes:
 cd backend
 uv run pytest -q
 ```
+
+## Observability Environment
+
+Add these in `backend/.env`:
+
+```env
+LOG_LEVEL=INFO
+METRICS_ENABLED=true
+OTEL_ENABLED=true
+OTEL_SERVICE_NAME=o2c-backend
+OTEL_ENVIRONMENT=local
+OTEL_EXPORTER_OTLP_ENDPOINT=alloy:4317
+OTEL_EXPORTER_INSECURE=true
+```
+
+Structured request logs are emitted as JSON and include `trace_id` / `span_id` when tracing is enabled.

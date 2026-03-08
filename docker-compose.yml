@@ -51,5 +51,81 @@ services:
         condition: service_started
     profiles: ["simulator"]
 
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: o2c-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://o2c:o2c@postgres:5432/o2c?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: ["observability"]
+
+  tempo:
+    image: grafana/tempo:2.6.1
+    container_name: o2c-tempo
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./observability/tempo/tempo.yaml:/etc/tempo.yaml:ro
+    ports:
+      - "3200:3200"
+    profiles: ["observability"]
+
+  alloy:
+    image: grafana/alloy:v1.5.1
+    container_name: o2c-alloy
+    command: ["run", "/etc/alloy/config.alloy"]
+    volumes:
+      - ./observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "12345:12345"
+    depends_on:
+      - tempo
+      - loki
+    profiles: ["observability"]
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: o2c-prometheus
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - backend
+      - postgres-exporter
+    profiles: ["observability"]
+
+  grafana:
+    image: grafana/grafana:11.1.4
+    container_name: o2c-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - tempo
+      - loki
+    profiles: ["observability"]
+
+  loki:
+    image: grafana/loki:3.1.1
+    container_name: o2c-loki
+    command: ["-config.file=/etc/loki/config.yml"]
+    volumes:
+      - ./observability/loki/config.yml:/etc/loki/config.yml:ro
+    ports:
+      - "3100:3100"
+    profiles: ["observability"]
+
 volumes:
   postgres_data:
